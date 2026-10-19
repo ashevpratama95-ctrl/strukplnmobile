@@ -2,382 +2,972 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLN Mobile</title>
-    <!-- Library untuk download gambar (html2canvas) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Transaksi PLM Mobile</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- IMPORT FONT NUNITO SANS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        :root {
-            --primary: #0284c7;
-            --primary-dark: #0369a1;
-            --accent: #f0f9ff;
-            --bg-color: #f1f5f9;
-            --text-main: #1e293b;
-            --border-color: #cbd5e1;
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased; 
         }
-        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 10px; margin: 0; color: #333; }
-        
-        .header-container { text-align: center; margin-bottom: 15px; }
-        h3.app-title { margin: 0 0 6px 0; color: #334155; font-weight: 700; font-size: 1.75rem; font-family: 'Inter', sans-serif; }
-        .app-subtitle { font-size: 0.65rem; color: #64748b; font-weight: 100; font-family: 'Inter', sans-serif; }
-        .app-subtitle strong { font-weight: 600; color: #475569; }
-        
-        /* Style Tab Kapsul Modern Tanpa Shadow Biru */
-        .tab-container { 
-            display: none; 
-            margin-bottom: 20px; 
-            background: #ffffff; 
-            border-radius: 9999px; 
-            padding: 5px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            max-width: 450px;
-            margin-left: auto;
-            margin-right: auto;
-            border: 1px solid #e2e8f0;
+
+        body {
+            background-color: #f0f4f8; 
+            display: flex;
+            justify-content: center;
+            overflow: hidden; 
+            color: #1e293b;
         }
-        .tab-btn { 
-            flex: 1; 
-            padding: 12px 20px; 
-            text-align: center; 
-            background: transparent; 
-            border: none; 
-            font-weight: 600; 
-            cursor: pointer; 
-            font-size: 0.95rem; 
-            border-radius: 9999px; 
-            color: #64748b; 
-            transition: all 0.25s ease;
-            -webkit-tap-highlight-color: transparent;
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #f0f4f8;
+            height: 100vh;
+            height: 100dvh; 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* =========================================
+           HEADER & NAVIGASI TAB
+           ========================================= */
+        .header {
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 20px 12px;
+        }
+
+        .header-top h1 {
+            font-size: 18px; 
+            font-weight: 800; 
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        .tabs {
+            display: flex;
+            padding: 0 20px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 0;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: #1976D2;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #1976D2;
+            border-radius: 3px 3px 0 0;
+            animation: slideIn 0.3s forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        .slider-container {
+            flex: 1;
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        
+        .slider-container::-webkit-scrollbar { display: none; }
+
+        .slide-page {
+            min-width: 100%;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            padding: 20px 16px;
+            box-sizing: border-box;
+            overflow-y: auto; 
+            max-height: 100%;
+        }
+
+        /* =========================================
+           STYLING CARD
+           ========================================= */
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px; 
+            padding: 0; 
+            margin-bottom: 12px; 
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            overflow: hidden; 
+        }
+
+        .card-title {
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #ACACAC;
+            padding: 18px 20px 10px 20px; 
+            border-bottom: 0.5px solid #f0f0f0;
+            margin-bottom: 0;
+        }
+
+        .card-content { 
+            padding: 14px 20px 18px 20px; 
+        }
+
+        /* =========================================
+           FORM INPUT
+           ========================================= */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-label-top {
+            display: block;
+            font-size: 14px;
+            font-weight: 700; 
+            color: #ACACAC; 
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            font-size: 15px; 
+            color: #334155;
+            font-weight: 600;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            background-color: #f8fafc; 
             outline: none;
-            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
         }
-        .tab-btn.active { 
-            background: var(--primary); 
-            color: white; 
+
+        .form-input:focus {
+            border-color: #1976D2; 
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.08); 
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-clear {
+            position: absolute;
+            right: 16px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #64748b;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .btn-clear.show { opacity: 1; visibility: visible; }
+        .btn-clear:active { background: #cbd5e1; }
+        .btn-clear svg { width: 14px; height: 14px; stroke-width: 2.5; }
+
+        /* TOMBOL ACAK - SUDAH JADI BIRU SEPERTI LIHAT STRUK */
+        .btn-random {
+            position: absolute;
+            right: 14px;
+            background: linear-gradient(135deg, #1976D2, #1565C0); 
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 2;
+            box-shadow: none; /* Shadow dihapus agar flat */
+        }
+
+        .btn-random:active { transform: scale(0.95); }
+
+        .section-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #ACACAC;
+            margin-bottom: 10px;
+        }
+
+        .tarif-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .tarif-btn {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 4px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tarif-btn:active { transform: scale(0.95); }
+
+        .tarif-btn.selected {
+            border-color: #1976D2;
+            background-color: #eff6ff;
+            color: #1976D2;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-reset {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 54px;
+            height: 54px;
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-reset:active { background-color: #dc2626; transform: scale(0.95); }
+        .btn-reset svg { width: 22px; height: 22px; }
+
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            color: #ffffff;
+            font-size: 16px; 
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: none;
+            padding: 16px;
             box-shadow: none; 
         }
 
-        .container { display: flex; gap: 20px; max-width: 1250px; margin: auto; }
-        
-        /* Form Section Dibuat Card Terpisah ala BA Tertib Bayar */
-        .form-section { background: transparent; padding: 0; box-shadow: none; flex: 1; font-family: 'Inter', sans-serif; }
-        .preview-section { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); flex: 1; }
-        
-        .form-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-        }
-        
-        .card-title {
-            font-size: 0.95rem;
+        .btn-primary:active { transform: scale(0.97); }
+
+        .btn-download-new {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669); 
+            color: #ffffff;
+            font-size: 16px; 
             font-weight: 700;
-            color: var(--primary-dark);
-            margin-top: 0;
-            margin-bottom: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: none;
+            padding: 16px;
+            gap: 8px;
+            margin-top: 10px;
+            box-shadow: none; 
+        }
+
+        .btn-download-new:active { transform: scale(0.97); }
+        .btn-download-new svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* =========================================
+           MODAL POP-UP
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 340px;
+            border-radius: 16px; 
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transform: scale(0.95) translateY(10px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background-color: #fee2e2;
+            color: #ef4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+        .modal-icon svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+        .modal-title { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+        .modal-desc { font-size: 14px; color: #64748b; margin-bottom: 24px; line-height: 1.5; }
+
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+
+        .btn-modal-batal {
+            flex: 1;
+            background-color: #f1f5f9;
+            color: #475569;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-modal-hapus {
+            flex: 1;
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
         }
         
-        .form-group { margin-bottom: 12px; }
-        .form-group:last-child { margin-bottom: 0; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85rem; color: #475569; }
-        .input-row { display: flex; gap: 8px; }
-        
-        .form-group input { 
-            width: 100%; 
-            padding: 10px 12px; 
-            box-sizing: border-box; 
-            font-size: 0.95rem; 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px; 
-            background: #fdfdfd; 
-            transition: all 0.2s; 
-            text-transform: uppercase; 
+        .btn-modal-simpan {
+            flex: 1;
+            background: linear-gradient(135deg, #1976D2, #1565C0);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
         }
-        
-        .form-group input:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); 
-            background: #fff; 
+
+        /* =========================================
+           STYLING STRUK
+           ========================================= */
+        .receipt-wrapper {
+            padding-bottom: 10px;
+            background-color: #F2F3F5; 
+            border-radius: 12px; 
         }
-        
-        /* Tombol Random Warna Merah Teks Putih */
-        .btn-random { background: #dc2626; color: white; border: none; padding: 0 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: background 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2); }
-        .btn-random:hover { background: #b91c1c; }
-        
-        /* Tampilan Struk Detail Pembelian */
-        .sheet-wrapper { overflow-x: auto; width: 100%; display: flex; justify-content: center; background: #f7f8fa; padding: 15px; box-sizing: border-box; }
-        .sheet { 
-            width: 100%; 
-            max-width: 420px; 
-            background: #f7f8fa; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-size: 10pt; 
-            color: #222; 
+
+        .receipt-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .receipt-group:last-child { margin-bottom: 0; }
+
+        .receipt-label {
+            font-size: 13px; 
+            color: #ACACAC;
+            margin-bottom: -1px; 
+            font-weight: 600;
         }
-        
-        .card-box { background: #ffffff; border-radius: 8px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .card-download { background: #ffffff; border-radius: 8px; padding: 10px 15px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
 
-        .section-title { font-size: 10.5pt; font-weight: bold; color: #888; margin-bottom: 12px; }
+        .receipt-value { font-size: 15px; color: #000000; font-weight: 600; }
 
-        .field-group { margin-bottom: 10px; }
-        .field-label { font-size: 8.5pt; color: #777; margin-bottom: 2px; }
-        .field-value { font-size: 10.5pt; font-weight: bold; color: #111; word-break: break-all; }
-
-        .row-item { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
-        .row-label { color: #666; font-size: 10pt; }
-        .row-value { font-weight: bold; color: #111; font-size: 10.5pt; text-align: right; }
-        .total-value { color: #e65c00 !important; font-size: 10.5pt !important; }
-
-        .btn-download { background: #32a1b9; color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 10.5pt; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-download:hover { background: #288c9f; }
-        .btn-download svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* Pengaturan Tampilan Mobile / HP */
-        @media (max-width: 900px) {
-            body { padding: 8px; }
-            .tab-container { display: flex !important; }
-            .form-section { display: none !important; }
-            .preview-section { display: none !important; }
-            
-            .form-section.mobile-active { display: block !important; width: 100%; box-sizing: border-box; }
-            .preview-section.mobile-active { display: block !important; width: 100%; box-sizing: border-box; }
-        }
+        .payment-list { display: flex; flex-direction: column; gap: 10px; }
+        .payment-item { display: flex; justify-content: space-between; align-items: flex-start; }
+        .payment-label { font-size: 14px; color: #555555; font-weight: 600; flex: 1; }
+        .payment-value { font-size: 15.5px; font-weight: 600; color: #000000; text-align: right; }
+        .total-item { margin-top: 4px; }
+        .total-item .payment-label { font-weight: 700; color: #555555; }
+        .payment-value.total { color: #e74c3c; font-weight: 700; }
     </style>
 </head>
 <body>
 
-<div class="header-container">
-    <h3 class="app-title">Transaksi PLN Mobile</h3>
-    <div class="app-subtitle">Dibuat oleh <strong>Asep Saepudin</strong></div>
-</div>
-
-<!-- Tombol Tab Menu HP -->
-<div class="tab-container" id="tabMenu">
-    <button type="button" class="tab-btn active" id="btnForm" onclick="switchTab('form')">1. Isi Form Data</button>
-    <button type="button" class="tab-btn" id="btnPreview" onclick="switchTab('preview')">2. Lihat Struk</button>
-</div>
-
-<div class="container">
-    <!-- Form Input Data -->
-    <div class="form-section mobile-active" id="formPane">
+    <div class="app-container">
         
-        <!-- Card 1: Detail Pembelian -->
-        <div class="form-card">
-            <div class="card-title">Detail Pembelian</div>
-            <div class="form-group">
-                <label>Virtual Account</label>
-                <div class="input-row">
-                    <input type="tel" id="inTrans" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updatePreview()">
-                    <button type="button" class="btn-random" onclick="randomizeVA()">Random</button>
-                </div>
+        <header class="header">
+            <div class="header-top">
+                <h1 id="header-title"> PLN Mobile</h1>
             </div>
-            <div class="form-group"><label>Jenis Layanan</label><input type="text" id="inLayanan" oninput="updatePreview()"></div>
-            <div class="form-group">
-                <label>ID Pelanggan</label>
-                <input type="tel" id="inIdPel" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updatePreview()">
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-form" onclick="switchTab(0)">Isi Form</button>
+                <button class="tab-btn" id="tab-struk" onclick="switchTab(1)">Lihat Struk</button>
             </div>
-            <div class="form-group"><label>Nama Pelanggan</label><input type="text" id="inNama" oninput="updatePreview()"></div>
-            <div class="form-group"><label>Nama Alias</label><input type="text" id="inAlias" oninput="updatePreview()"></div>
-            <div class="form-group"><label>BL/TH</label><input type="text" id="inBlTh" value="" oninput="updatePreview()"></div>
-            <div class="form-group"><label>Tarif / Daya</label><input type="text" id="inTarif" value="" oninput="updatePreview()"></div>
-        </div>
+        </header>
 
-        <!-- Card 2: Informasi Pembayaran -->
-        <div class="form-card">
-            <div class="card-title">Informasi Pembayaran</div>
-            <div class="form-group"><label>Rp Tag PLN</label><input type="tel" id="inRpTag" value="" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updatePreview()"></div>
-            <div class="form-group"><label>Biaya Layanan</label><input type="tel" id="inAdmin" value="1750" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, ''); updatePreview()"></div>
-            <div class="form-group"><label>Metode Pembayaran</label><input type="text" id="inMetode" value="BNI VA" oninput="updatePreview()"></div>
+        <div class="slider-container" id="slider-container">
+            
+            <!-- HALAMAN 1: FORM INPUT -->
+            <div class="slide-page">
+                <form id="form-pembelian" onsubmit="event.preventDefault(); switchTab(1);">
+                    
+                    <div class="card">
+                        <h2 class="card-title">Informasi Pelanggan</h2>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label for="input-va" class="form-label-top">Virtual Account</label>
+                                <div class="input-wrapper">
+                                    <input type="tel" id="input-va" class="form-input" value="3432420004572976" placeholder="Masukkan Virtual Account" oninput="toggleClearBtn('input-va', 'clear-va'); this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <button type="button" id="clear-va" class="btn-clear show" onclick="clearInput('input-va', 'clear-va')">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                    <button type="button" class="btn-random" onclick="generateVA()">Acak</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="input-id" class="form-label-top">ID Pelanggan / Meter</label>
+                                <div class="input-wrapper">
+                                    <input type="tel" id="input-id" class="form-input uppercase-input" placeholder="Masukkan ID Pelanggan" oninput="toggleClearBtn('input-id', 'clear-id'); this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <button type="button" id="clear-id" class="btn-clear" onclick="clearInput('input-id', 'clear-id')">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="input-nama" class="form-label-top">Nama Lengkap Pelanggan</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="input-nama" class="form-input" style="text-transform: uppercase;" placeholder="Masukkan Nama Lengkap" oninput="toggleClearBtn('input-nama', 'clear-nama')">
+                                    <button type="button" id="clear-nama" class="btn-clear" onclick="clearInput('input-nama', 'clear-nama')">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <span class="section-label">Pilih Tarif / Daya</span>
+                                <div class="tarif-grid" id="tarif-grid-container">
+                                    <button type="button" class="tarif-btn" onclick="selectTarif(this, 'R1 / 450')">R1 / 450</button>
+                                    <button type="button" class="tarif-btn" onclick="selectTarif(this, 'R1 / 900')">R1 / 900</button>
+                                    <button type="button" class="tarif-btn" onclick="selectTarif(this, 'R1M / 900')">R1M / 900</button>
+                                    <button type="button" class="tarif-btn" onclick="selectTarif(this, 'R1 / 1300')">R1 / 1300</button>
+                                    <button type="button" class="tarif-btn" onclick="selectTarif(this, 'R1 / 2200')">R1 / 2200</button>
+                                    <button type="button" class="tarif-btn" id="btn-lainnya" onclick="openModal()">Lainnya</button>
+                                </div>
+                                <input type="hidden" id="input-tarif">
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="input-tagihan" class="form-label-top">Nominal Tagihan PLN</label>
+                                <div class="input-wrapper">
+                                    <input type="tel" id="input-tagihan" class="form-input" placeholder="Masukkan nominal tanpa titik (Cth: 131426)" oninput="toggleClearBtn('input-tagihan', 'clear-tagihan'); this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <button type="button" id="clear-tagihan" class="btn-clear" onclick="clearInput('input-tagihan', 'clear-tagihan')">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div> 
+                    </div> 
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-reset" onclick="bukaKonfirmasiReset()" title="Reset Form">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </button>
+                        
+                        <button type="submit" class="btn-primary">
+                            Lihat Struk
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- HALAMAN 2: HASIL STRUK -->
+            <div class="slide-page">
+                <div class="receipt-wrapper">
+                    <div id="capture-area">
+                        
+                        <div class="card">
+                            <h2 class="card-title">Detail Pembelian</h2>
+                            <div class="card-content">
+                                <div class="receipt-group">
+                                    <span class="receipt-label">ID Transaksi</span>
+                                    <span class="receipt-value" id="out-va">-</span>
+                                </div>
+                                <div class="receipt-group">
+                                    <span class="receipt-label">Jenis Layanan</span>
+                                    <span class="receipt-value" id="out-layanan">Pascabayar</span>
+                                </div>
+                                <div class="receipt-group">
+                                    <span class="receipt-label">ID Pelanggan</span>
+                                    <span class="receipt-value" id="out-id">-</span>
+                                </div>
+                                <div class="receipt-group">
+                                    <span class="receipt-label">Nama Pelanggan</span>
+                                    <span class="receipt-value" id="out-nama">-</span>
+                                </div>
+                                <div class="receipt-group">
+                                    <span class="receipt-label">Nama Alias</span>
+                                    <span class="receipt-value" id="out-alias">-</span>
+                                </div>
+                                <div class="receipt-group">
+                                    <span class="receipt-label">BL/TH</span>
+                                    <span class="receipt-value" id="out-blth">-</span>
+                                </div>
+                                <div class="receipt-group">
+                                    <span class="receipt-label">Tarif / Daya</span>
+                                    <span class="receipt-value" id="out-tarif">-</span>
+                                </div>
+                                <div class="receipt-group">
+                                    <span class="receipt-label">Rp Tag PLN</span>
+                                    <span class="receipt-value" id="out-tagihan">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2 class="card-title">Informasi Pembayaran</h2>
+                            <div class="card-content">
+                                <div class="payment-list">
+                                    <div class="payment-item">
+                                        <span class="payment-label">Metode Pembayaran</span>
+                                        <span class="payment-value">BNI VA</span>
+                                    </div>
+                                    <div class="payment-item">
+                                        <span class="payment-label">Listrik PLN</span>
+                                        <span class="payment-value" id="out-listrik">-</span>
+                                    </div>
+                                    <div class="payment-item">
+                                        <span class="payment-label">Biaya Layanan</span>
+                                        <span class="payment-value">Rp 1.750</span>
+                                    </div>
+                                    <div class="payment-item total-item">
+                                        <span class="payment-label">Total Pembayaran</span>
+                                        <span class="payment-value total" id="out-total">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- TOMBOL DOWNLOAD -->
+                <button class="btn-download-new" id="btn-download-img" onclick="downloadReceipt()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 3v12"></path>
+                        <path d="M8 11l4 4 4-4"></path>
+                        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path>
+                    </svg>
+                    <span id="btn-text">Download Invoice</span>
+                </button>
+            </div>
+
         </div>
 
     </div>
 
-    <!-- Pratinjau Tampilan Struk -->
-    <div class="preview-section" id="previewPane">
-        <h3></h3>
-        <div class="sheet-wrapper">
-            <div class="sheet" id="strukContainer">
-                <!-- Kartu Kotak Pertama: Detail Pembelian -->
-                <div class="card-box">
-                    <div class="section-title">Detail Pembelian</div>
-                    
-                    <div class="field-group">
-                        <div class="field-label">Virtual Account</div>
-                        <div class="field-value" id="prevTrans"></div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Jenis Layanan</div>
-                        <div class="field-value" id="prevLayanan">Pascabayar</div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">ID Pelanggan</div>
-                        <div class="field-value" id="prevIdPel">537612167964</div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Nama Pelanggan</div>
-                        <div class="field-value" id="prevNama">ASE**********</div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Nama Alias</div>
-                        <div class="field-value" id="prevAlias">ASE**********</div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">BL/TH</div>
-                        <div class="field-value" id="prevBlTh"></div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field-label">Tarif / Daya</div>
-                        <div class="field-value" id="prevTarif">R1 / 450 VA</div>
-                    </div>
-                    <div class="field-group" style="margin-bottom: 0;">
-                        <div class="field-label">Rp Tag PLN</div>
-                        <div class="field-value" id="prevRpTag">Rp 35.574</div>
-                    </div>
-                </div>
-
-                <!-- Kartu Kotak Kedua: Informasi Pembayaran -->
-                <div class="card-box">
-                    <div class="section-title">Informasi Pembayaran</div>
-                    
-                    <div class="row-item">
-                        <div class="row-label">Metode Pembayaran</div>
-                        <div class="row-value" id="prevMetode">BNI VA</div>
-                    </div>
-                    <div class="row-item">
-                        <div class="row-label">Listrik PLN</div>
-                        <div class="row-value" id="prevListrik">Rp 35.574</div>
-                    </div>
-                    <div class="row-item">
-                        <div class="row-label">Biaya Layanan</div>
-                        <div class="row-value" id="prevAdmin">Rp 1.750</div>
-                    </div>
-                    <div class="row-item" style="margin-bottom: 0;">
-                        <div class="row-label">Total Pembayaran</div>
-                        <div class="row-value total-value" id="prevTotal">Rp 37.324</div>
-                    </div>
-                </div>
-
-                <!-- Kartu Kotak Ketiga: Tombol Download -->
-                <div class="card-download" style="margin-bottom: 0;">
-                    <button type="button" class="btn-download" onclick="downloadImage()">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M12 4v12m0 0l-4-4m4 4l4-4" />
-                        </svg>
-                        Download Invoice
-                    </button>
-                </div>
+    <!-- MODAL TAMBAH TARIF -->
+    <div class="modal-overlay" id="modal-lainnya" onclick="closeModal(event)">
+        <div class="modal-content" style="text-align: left; max-width: 400px; border-radius: 16px;" onclick="event.stopPropagation()">
+            <h2 class="modal-title">Tambah Tarif Baru</h2>
+            <p class="modal-desc">Masukkan tarif / daya listrik yang tidak ada di daftar pilihan.</p>
+            
+            <input type="text" id="modal-input-tarif" class="form-input" style="margin-bottom: 24px; text-transform: uppercase;" placeholder="Contoh: B1 / 450" oninput="this.value = this.value.toUpperCase()">
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-batal" onclick="closeModal(event)">Batal</button>
+                <button type="button" class="btn-modal-simpan" onclick="simpanTarifBaru()">Simpan Tarif</button>
             </div>
         </div>
-        <br>
     </div>
-</div>
 
-<script>
-    function generateRandomDigits(length) {
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += Math.floor(Math.random() * 10);
+    <!-- MODAL KONFIRMASI RESET -->
+    <div class="modal-overlay" id="modal-konfirmasi" onclick="tutupKonfirmasi(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <h2 class="modal-title">Hapus Data?</h2>
+            <p class="modal-desc">Semua data yang sudah diisi akan dihapus. Lanjutkan?</p>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-batal" onclick="tutupKonfirmasi()">Batal</button>
+                <button type="button" class="btn-modal-hapus" onclick="konfirmasiReset()">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sliderContainer = document.getElementById('slider-container');
+        const tabForm = document.getElementById('tab-form');
+        const tabStruk = document.getElementById('tab-struk');
+
+        function toggleClearBtn(inputId, clearBtnId) {
+            const input = document.getElementById(inputId);
+            const btn = document.getElementById(clearBtnId);
+            if (input.value.length > 0) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
         }
-        return result;
-    }
 
-    function randomizeVA() {
-        let randomVA = "3432" + generateRandomDigits(12);
-        document.getElementById('inTrans').value = randomVA;
-        updatePreview();
-    }
-
-    function maskName(inputVal) {
-        let trimmed = inputVal.trim();
-        if (trimmed.length <= 3) {
-            return trimmed;
+        function clearInput(inputId, clearBtnId) {
+            const input = document.getElementById(inputId);
+            input.value = '';
+            document.getElementById(clearBtnId).classList.remove('show');
+            input.focus();
+            if(inputId === 'input-tarif') {
+                const buttons = document.querySelectorAll('.tarif-btn');
+                buttons.forEach(btn => btn.classList.remove('selected'));
+            }
         }
-        let firstThree = trimmed.substring(0, 3);
-        let asterisks = '*'.repeat(trimmed.length - 3);
-        return firstThree + asterisks;
-    }
 
-    function formatRupiah(number) {
-        return "Rp " + Number(number).toLocaleString('id-ID');
-    }
+        window.onload = function() {
+            toggleClearBtn('input-va', 'clear-va');
+        };
 
-    window.onload = function() {
-        randomizeVA();
-        updatePreview();
-    };
-
-    function switchTab(tab) {
-        let formPane = document.getElementById('formPane');
-        let previewPane = document.getElementById('previewPane');
-        let btnForm = document.getElementById('btnForm');
-        let btnPreview = document.getElementById('btnPreview');
-
-        if (tab === 'form') {
-            formPane.classList.add('mobile-active');
-            previewPane.classList.remove('mobile-active');
-            btnForm.classList.add('active');
-            btnPreview.classList.remove('active');
-        } else {
-            formPane.classList.remove('mobile-active');
-            previewPane.classList.add('mobile-active');
-            btnForm.classList.remove('active');
-            btnPreview.classList.add('active');
+        function switchTab(index) {
+            const pageWidth = sliderContainer.offsetWidth;
+            sliderContainer.scrollTo({
+                left: pageWidth * index,
+                behavior: 'smooth'
+            });
         }
-    }
 
-    function updatePreview() {
-        document.getElementById('prevTrans').innerText = document.getElementById('inTrans').value;
-        document.getElementById('prevLayanan').innerText = document.getElementById('inLayanan').value;
-        document.getElementById('prevIdPel').innerText = document.getElementById('inIdPel').value;
-        
-        let rawNama = document.getElementById('inNama').value.toUpperCase();
-        let rawAlias = document.getElementById('inAlias').value.toUpperCase();
-        document.getElementById('prevNama').innerText = maskName(rawNama);
-        document.getElementById('prevAlias').innerText = maskName(rawAlias);
+        sliderContainer.addEventListener('scroll', () => {
+            const pageWidth = sliderContainer.offsetWidth;
+            const scrollLeft = sliderContainer.scrollLeft;
+            const activeIndex = Math.round(scrollLeft / pageWidth);
 
-        document.getElementById('prevBlTh').innerText = document.getElementById('inBlTh').value.toUpperCase();
-        document.getElementById('prevTarif').innerText = document.getElementById('inTarif').value.toUpperCase();
-        document.getElementById('prevMetode').innerText = document.getElementById('inMetode').value.toUpperCase();
-
-        let tagPln = parseFloat(document.getElementById('inRpTag').value) || 0;
-        let adminFee = parseFloat(document.getElementById('inAdmin').value) || 0;
-        let totalBayar = tagPln + adminFee;
-
-        document.getElementById('prevRpTag').innerText = formatRupiah(tagPln);
-        document.getElementById('prevListrik').innerText = formatRupiah(tagPln);
-        document.getElementById('prevAdmin').innerText = formatRupiah(adminFee);
-        document.getElementById('prevTotal').innerText = formatRupiah(totalBayar);
-    }
-
-    function downloadImage() {
-        const element = document.getElementById('strukContainer');
-
-        html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#f7f8fa' }).then(canvas => {
-            const imageURL = canvas.toDataURL('image/png');
-            let namaFile = document.getElementById('inIdPel').value.trim() || 'Invoice_PLN';
-
-            const link = document.createElement('a');
-            link.href = imageURL;
-            link.download = `Invoice_${namaFile}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }).catch(err => {
-            alert("Gagal membuat gambar: " + err);
+            if (activeIndex === 0) {
+                tabForm.classList.add('active');
+                tabStruk.classList.remove('active');
+            } else {
+                tabStruk.classList.add('active');
+                tabForm.classList.remove('active');
+                updateStrukData();
+            }
         });
-    }
-</script>
 
+        function selectTarif(button, value) {
+            const buttons = document.querySelectorAll('.tarif-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            document.getElementById('input-tarif').value = value;
+        }
+
+        function openModal() {
+            document.getElementById('modal-lainnya').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('modal-input-tarif').focus();
+            }, 100);
+        }
+
+        function closeModal(event) {
+            if(event && event.target !== event.currentTarget) return; 
+            document.getElementById('modal-lainnya').classList.remove('active');
+            document.getElementById('modal-input-tarif').value = '';
+        }
+
+        function simpanTarifBaru() {
+            const inputVal = document.getElementById('modal-input-tarif').value.trim();
+            
+            if (!inputVal) {
+                alert("Silakan masukkan tarif terlebih dahulu!");
+                return;
+            }
+
+            const gridContainer = document.getElementById('tarif-grid-container');
+            const btnLainnya = document.getElementById('btn-lainnya');
+
+            const existingButtons = document.querySelectorAll('.tarif-btn');
+            let isExist = false;
+            existingButtons.forEach(btn => {
+                if(btn.id !== 'btn-lainnya' && btn.innerText.toUpperCase() === inputVal.toUpperCase()) {
+                    isExist = true;
+                    selectTarif(btn, inputVal);
+                }
+            });
+
+            if(!isExist) {
+                const newBtn = document.createElement('button');
+                newBtn.type = 'button';
+                newBtn.className = 'tarif-btn selected'; 
+                newBtn.innerText = inputVal;
+                
+                newBtn.onclick = function() {
+                    selectTarif(this, inputVal);
+                };
+
+                gridContainer.insertBefore(newBtn, btnLainnya);
+                document.getElementById('input-tarif').value = inputVal;
+                
+                const buttons = document.querySelectorAll('.tarif-btn');
+                buttons.forEach(btn => {
+                    if(btn !== newBtn) btn.classList.remove('selected');
+                });
+            }
+            
+            document.getElementById('modal-lainnya').classList.remove('active');
+            document.getElementById('modal-input-tarif').value = '';
+        }
+
+        function getCurrentBLTH() {
+            const bulanIndo = ["JAN", "FEB", "MAR", "APR", "MEI", "JUN", "JUL", "AGU", "SEP", "OKT", "NOV", "DES"];
+            const d = new Date();
+            const bulan = bulanIndo[d.getMonth()];
+            const tahun = d.getFullYear().toString().slice(-2); 
+            return `${bulan}${tahun}`;
+        }
+
+        function generateVA() {
+            const inputVA = document.getElementById('input-va');
+            let currentVA = inputVA.value;
+            let prefix = currentVA.length >= 10 ? currentVA.substring(0, 10) : "3432420004";
+            let randomSuffix = "";
+            for(let i = 0; i < 6; i++) {
+                randomSuffix += Math.floor(Math.random() * 10);
+            }
+            inputVA.value = prefix + randomSuffix;
+            toggleClearBtn('input-va', 'clear-va'); 
+        }
+
+        // --- LOGIKA POPUP RESET CUSTOM ---
+        function bukaKonfirmasiReset() {
+            document.getElementById('modal-konfirmasi').classList.add('active');
+        }
+
+        function tutupKonfirmasi(event) {
+            if(event && event.target !== event.currentTarget) return;
+            document.getElementById('modal-konfirmasi').classList.remove('active');
+        }
+
+        function konfirmasiReset() {
+            tutupKonfirmasi();
+            
+            // Logika Reset Form
+            document.getElementById('form-pembelian').reset();
+            document.getElementById('input-va').value = "3432420004572976";
+            document.getElementById('input-tarif').value = "";
+            
+            const clearBtns = document.querySelectorAll('.btn-clear');
+            clearBtns.forEach(btn => btn.classList.remove('show'));
+            toggleClearBtn('input-va', 'clear-va'); 
+            
+            const buttons = document.querySelectorAll('.tarif-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            const gridContainer = document.getElementById('tarif-grid-container');
+            const allButtons = gridContainer.querySelectorAll('.tarif-btn');
+            allButtons.forEach(btn => {
+                if (btn.id !== 'btn-lainnya' && !['R1 / 450', 'R1 / 900', 'R1M / 900', 'R1 / 1300', 'R1 / 2200'].includes(btn.innerText)) {
+                    btn.remove();
+                }
+            });
+            
+            updateStrukData();
+        }
+
+        function sensorNama(nama) {
+            if (nama && nama.length > 3) {
+                let awal = nama.substring(0, 3);
+                let sensor = "*".repeat(nama.length - 3);
+                return awal + sensor;
+            }
+            return nama || "-"; 
+        }
+
+        function updateStrukData() {
+            const va = document.getElementById('input-va').value || "-";
+            const idPel = document.getElementById('input-id').value || "-";
+            const namaAsli = document.getElementById('input-nama').value;
+            const tarif = document.getElementById('input-tarif').value;
+            const tagihanAngka = document.getElementById('input-tagihan').value; 
+
+            const namaTersensor = sensorNama(namaAsli);
+            const idPelUpper = idPel.toUpperCase();
+            
+            let tarifUpper = "-";
+            if(tarif) {
+                tarifUpper = tarif.toUpperCase().trim().replace(/\bVA\b/g, '').trim();
+                tarifUpper = tarifUpper + ' VA';
+            }
+
+            const blthOtomatis = getCurrentBLTH();
+
+            let tagihanNum = parseInt(tagihanAngka) || 0;
+            let tagihanFormat = "-";
+            let totalFormat = "-";
+            
+            if(tagihanAngka) {
+                tagihanFormat = "Rp " + tagihanNum.toLocaleString('id-ID');
+                let biayaLayanan = 1750;
+                let total = tagihanNum + biayaLayanan;
+                totalFormat = "Rp " + total.toLocaleString('id-ID');
+            }
+
+            document.getElementById('out-va').innerText = va;
+            document.getElementById('out-id').innerText = idPelUpper;
+            document.getElementById('out-nama').innerText = namaTersensor; 
+            document.getElementById('out-alias').innerText = namaTersensor; 
+            document.getElementById('out-blth').innerText = blthOtomatis;
+            document.getElementById('out-tarif').innerText = tarifUpper;
+            document.getElementById('out-tagihan').innerText = tagihanFormat;
+            document.getElementById('out-listrik').innerText = tagihanFormat;
+            document.getElementById('out-total').innerText = totalFormat;
+        }
+
+        function downloadReceipt() {
+            const captureArea = document.getElementById('capture-area');
+            const btnText = document.getElementById('btn-text');
+            
+            btnText.innerText = "Menyimpan...";
+
+            const originalCardContentPadding = document.querySelector('.card-content').style.padding;
+            const originalReceiptLabelSize = document.querySelector('.receipt-label').style.fontSize;
+            const originalReceiptValueSize = document.querySelector('.receipt-value').style.fontSize;
+            const originalPaymentLabelSize = document.querySelector('.payment-label').style.fontSize;
+            const originalPaymentValueSize = document.querySelector('.payment-value').style.fontSize;
+
+            document.querySelectorAll('.card-content').forEach(el => {
+                el.style.padding = "12px 16px 16px 16px"; 
+            });
+            
+            document.querySelectorAll('.receipt-label').forEach(el => {
+                el.style.fontSize = "12px"; 
+            });
+            document.querySelectorAll('.receipt-value').forEach(el => {
+                el.style.fontSize = "14px"; 
+            });
+            document.querySelectorAll('.payment-label').forEach(el => {
+                el.style.fontSize = "13px"; 
+            });
+            document.querySelectorAll('.payment-value').forEach(el => {
+                el.style.fontSize = "14px"; 
+            });
+
+            setTimeout(() => {
+                html2canvas(captureArea, {
+                    scale: 3, 
+                    backgroundColor: "#F2F3F5", 
+                    useCORS: true,
+                    scrollX: 0,
+                    scrollY: -window.scrollY 
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'Invoice_PLN_' + document.getElementById('out-id').innerText + '.jpg';
+                    link.href = canvas.toDataURL('image/jpeg', 0.95);
+                    link.click();
+                    
+                    document.querySelectorAll('.card-content').forEach(el => {
+                        el.style.padding = originalCardContentPadding;
+                    });
+                    document.querySelectorAll('.receipt-label').forEach(el => {
+                        el.style.fontSize = originalReceiptLabelSize;
+                    });
+                    document.querySelectorAll('.receipt-value').forEach(el => {
+                        el.style.fontSize = originalReceiptValueSize;
+                    });
+                    document.querySelectorAll('.payment-label').forEach(el => {
+                        el.style.fontSize = originalPaymentLabelSize;
+                    });
+                    document.querySelectorAll('.payment-value').forEach(el => {
+                        el.style.fontSize = originalPaymentValueSize;
+                    });
+
+                    btnText.innerText = "Download Invoice";
+                }).catch(err => {
+                    console.error("Gagal mendownload gambar: ", err);
+                    alert("Maaf, terjadi kesalahan saat menyimpan gambar.");
+                    btnText.innerText = "Download Invoice";
+                });
+            }, 150); 
+        }
+    </script>
 </body>
 </html>
