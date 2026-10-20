@@ -196,6 +196,14 @@
             font-size: 15px;
         }
 
+        /* CSS UNTUK NAMA PELANGGAN */
+        #input-nama {
+            text-transform: uppercase; /* Inputan user jadi kapital */
+        }
+        #input-nama::placeholder {
+            text-transform: none; /* Placeholder tetap normal */
+        }
+
         .input-wrapper {
             position: relative;
             display: flex;
@@ -500,7 +508,7 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="input-id" class="form-label-top">ID Pelanggan / Meter</label>
+                                <label for="input-id" class="form-label-top">ID Pelanggan</label>
                                 <div class="input-wrapper">
                                     <input type="tel" id="input-id" class="form-input uppercase-input" placeholder="Masukkan ID Pelanggan" oninput="toggleClearBtn('input-id', 'clear-id'); this.value = this.value.replace(/[^0-9]/g, '')">
                                     <button type="button" id="clear-id" class="btn-clear" onclick="clearInput('input-id', 'clear-id')">
@@ -510,9 +518,9 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="input-nama" class="form-label-top">Nama Lengkap Pelanggan</label>
+                                <label for="input-nama" class="form-label-top">Nama Pelanggan</label>
                                 <div class="input-wrapper">
-                                    <input type="text" id="input-nama" class="form-input" style="text-transform: uppercase;" placeholder="Masukkan Nama Lengkap" oninput="toggleClearBtn('input-nama', 'clear-nama')">
+                                    <input type="text" id="input-nama" class="form-input" placeholder="Masukkan Nama Lengkap" oninput="toggleClearBtn('input-nama', 'clear-nama')">
                                     <button type="button" id="clear-nama" class="btn-clear" onclick="clearInput('input-nama', 'clear-nama')">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                     </button>
@@ -520,7 +528,7 @@
                             </div>
                             
                             <div class="form-group">
-                                <span class="section-label">Pilih Tarif / Daya</span>
+                                <span class="section-label">Tarif / Daya</span>
                                 <div class="tarif-grid" id="tarif-grid-container">
                                     <button type="button" class="tarif-btn" onclick="selectTarif(this, 'R1 / 450')">R1 / 450</button>
                                     <button type="button" class="tarif-btn" onclick="selectTarif(this, 'R1 / 900')">R1 / 900</button>
@@ -533,9 +541,9 @@
                             </div>
                             
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label for="input-tagihan" class="form-label-top">Nominal Tagihan PLN</label>
+                                <label for="input-tagihan" class="form-label-top">Nominal Tagihan</label>
                                 <div class="input-wrapper">
-                                    <input type="tel" id="input-tagihan" class="form-input" placeholder="Masukkan nominal tanpa titik (Cth: 131426)" oninput="toggleClearBtn('input-tagihan', 'clear-tagihan'); this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <input type="tel" id="input-tagihan" class="form-input" placeholder="Masukkan nominal tanpa titik" oninput="toggleClearBtn('input-tagihan', 'clear-tagihan'); this.value = this.value.replace(/[^0-9]/g, '')">
                                     <button type="button" id="clear-tagihan" class="btn-clear" onclick="clearInput('input-tagihan', 'clear-tagihan')">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                     </button>
@@ -854,12 +862,17 @@
         }
 
         function sensorNama(nama) {
-            if (nama && nama.length > 3) {
-                let awal = nama.substring(0, 3);
-                let sensor = "*".repeat(nama.length - 3);
-                return awal + sensor;
+            if (nama) {
+                let namaUpper = nama.toUpperCase();
+                
+                if (namaUpper.length > 3) {
+                    let awal = namaUpper.substring(0, 3);
+                    let sensor = "*".repeat(namaUpper.length - 3);
+                    return awal + sensor;
+                }
+                return namaUpper;
             }
-            return nama || "-"; 
+            return "-"; 
         }
 
         function updateStrukData() {
@@ -908,6 +921,21 @@
             
             btnText.innerText = "Menyimpan...";
 
+            // --- LOGIKA PENAMAAN FILE BARU (Screenshot_YYYY-MM-DD-HH-MM-SS-ms_com.icon.pln123.jpg) ---
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            
+            const HH = String(today.getHours()).padStart(2, '0');
+            const min = String(today.getMinutes()).padStart(2, '0');
+            const SS = String(today.getSeconds()).padStart(2, '0');
+            const ms = String(today.getMilliseconds()).padStart(3, '0');
+
+            // Susun nama file sesuai gambar contoh
+            const namaFileBaru = `Screenshot_${yyyy}-${mm}-${dd}-${HH}-${min}-${SS}-${ms}_com.icon.pln123.jpg`;
+            // -----------------------------------------------------------------------------------------
+
             const originalCardContentPadding = document.querySelector('.card-content').style.padding;
             const originalReceiptLabelSize = document.querySelector('.receipt-label').style.fontSize;
             const originalReceiptValueSize = document.querySelector('.receipt-value').style.fontSize;
@@ -940,7 +968,10 @@
                     scrollY: -window.scrollY 
                 }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = 'Invoice_PLN_' + document.getElementById('out-id').innerText + '.jpg';
+                    
+                    // Gunakan nama file baru di sini
+                    link.download = namaFileBaru; 
+                    
                     link.href = canvas.toDataURL('image/jpeg', 0.95);
                     link.click();
                     
